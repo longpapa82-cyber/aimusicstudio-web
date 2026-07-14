@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>AI Music Studio — 공유된 음악</title>
+<meta name="description" content="AI Music Studio에서 만든 음악이 공유되었어요. 앱에서 들어보세요." />
+<meta property="og:title" content="AI Music Studio — 공유된 음악" />
+<meta property="og:description" content="AI로 만든 나만의 음악. 앱에서 들어보세요." />
+<meta property="og:type" content="music.song" />
+<link rel="preconnect" href="https://osbtsflkafjhzyapbzdd.supabase.co" crossorigin />
+<style>
+  :root {
+    --bg: #101415; --surface: #1d2022; --surface2: #272a2c;
+    --on: #e0e3e5; --on-variant: #cfc2d6; --outline: #4d4354;
+    --primary: #ddb7ff; --primary-c: #b76dff; --secondary: #ffc640;
+    --grad: linear-gradient(135deg, #b76dff, #ffc640);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    background:
+      radial-gradient(circle at 50% 0%, rgba(73,0,128,0.55), transparent 60%),
+      var(--bg);
+    color: var(--on);
+    font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px; min-height: 100dvh;
+  }
+  .card {
+    width: 100%; max-width: 420px; text-align: center;
+    background: rgba(29,32,34,0.6);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 24px; padding: 32px 24px;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.5), 0 0 40px rgba(183,109,255,0.15);
+  }
+  .brand {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-weight: 800; letter-spacing: -0.02em; font-size: 15px;
+    background: var(--grad); -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; margin-bottom: 24px;
+  }
+  .brand .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--secondary);
+    box-shadow: 0 0 10px var(--secondary); -webkit-text-fill-color: initial; }
+  .art {
+    width: 128px; height: 128px; margin: 0 auto 20px; border-radius: 20px;
+    background: var(--grad); display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 40px rgba(183,109,255,0.4); position: relative; overflow: hidden;
+  }
+  .art .note { font-size: 56px; color: #1a0033; }
+  .bars { position: absolute; bottom: 14px; left: 0; right: 0;
+    display: flex; align-items: flex-end; justify-content: center; gap: 3px; height: 22px; }
+  .bars i { width: 4px; border-radius: 2px; background: rgba(26,0,51,0.55);
+    animation: eq .9s ease-in-out infinite; }
+  .bars i:nth-child(2){ animation-delay:.15s } .bars i:nth-child(3){ animation-delay:.3s }
+  .bars i:nth-child(4){ animation-delay:.45s } .bars i:nth-child(5){ animation-delay:.6s }
+  @keyframes eq { 0%,100%{height:20%} 50%{height:90%} }
+  h1 { font-size: 22px; font-weight: 700; line-height: 1.3; margin-bottom: 6px; word-break: keep-all; }
+  .meta { color: var(--on-variant); font-size: 14px; margin-bottom: 28px; }
+  .btn {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; padding: 16px; border-radius: 9999px; border: none;
+    font-size: 16px; font-weight: 700; cursor: pointer; text-decoration: none;
+    transition: transform .15s ease, box-shadow .3s ease;
+  }
+  .btn-primary { background: var(--grad); color: #1a0033;
+    box-shadow: 0 8px 30px rgba(183,109,255,0.4); }
+  .btn-primary:active { transform: scale(0.97); }
+  .stores { display: flex; gap: 10px; margin-top: 14px; justify-content: center; flex-wrap: wrap; }
+  .store {
+    display: inline-flex; align-items: center; gap: 6px; padding: 10px 16px;
+    border-radius: 12px; background: var(--surface2); border: 1px solid var(--outline);
+    color: var(--on); font-size: 13px; font-weight: 600; text-decoration: none;
+  }
+  .store .soon { font-size: 11px; color: var(--secondary); }
+  .hint { color: var(--on-variant); font-size: 12px; margin-top: 22px; line-height: 1.6; }
+  .hint a { color: var(--primary); }
+  .spinner { width: 22px; height: 22px; border: 3px solid rgba(255,255,255,0.2);
+    border-top-color: var(--primary); border-radius: 50%; animation: spin .8s linear infinite;
+    margin: 0 auto; } @keyframes spin { to { transform: rotate(360deg) } }
+</style>
+</head>
+<body>
+  <main class="card">
+    <div class="brand"><span class="dot"></span>AI Music Studio</div>
+    <div class="art"><span class="note">♪</span>
+      <div class="bars"><i></i><i></i><i></i><i></i><i></i></div>
+    </div>
+    <h1 id="title"><span class="spinner"></span></h1>
+    <p class="meta" id="meta">음악을 불러오는 중…</p>
+
+    <a class="btn btn-primary" id="openBtn" href="#">
+      <span>▶</span> 앱에서 듣기
+    </a>
+    <div class="stores">
+      <a class="store" id="iosStore" href="#">App Store <span class="soon">출시 예정</span></a>
+      <a class="store" id="androidStore" href="#">Google Play <span class="soon">출시 예정</span></a>
+    </div>
+
+    <p class="hint">
+      재생은 AI Music Studio 앱에서만 가능해요.<br />
+      앱이 없다면 설치 후 이 링크를 다시 열어주세요.<br />
+      <a href="../">AI Music Studio 알아보기 →</a>
+    </p>
+  </main>
+
+  <script>
+    (function () {
+      var SUPABASE_URL = 'https://osbtsflkafjhzyapbzdd.supabase.co';
+      var SUPABASE_ANON = 'sb_publishable_zrr3wSUkfwKBQ-yOuQkq0w_unMu24ov';
+      var SCHEME = 'aimusicstudio';
+
+      // Token from ?t=<token> or the trailing path segment (/s/<token>).
+      var params = new URLSearchParams(location.search);
+      var token = params.get('t') || params.get('token');
+      if (!token) {
+        var seg = location.pathname.replace(/\/+$/, '').split('/');
+        var last = seg[seg.length - 1];
+        if (last && last !== 's') token = last;
+      }
+
+      var titleEl = document.getElementById('title');
+      var metaEl = document.getElementById('meta');
+      var openBtn = document.getElementById('openBtn');
+
+      var deepLink = token ? (SCHEME + '://s/' + token) : (SCHEME + '://');
+      openBtn.setAttribute('href', deepLink);
+
+      function fmtDur(sec) {
+        if (!sec && sec !== 0) return '';
+        var m = Math.floor(sec / 60), s = Math.floor(sec % 60);
+        return m + ':' + (s < 10 ? '0' : '') + s;
+      }
+
+      if (!token) {
+        titleEl.textContent = '링크를 찾을 수 없어요';
+        metaEl.textContent = '유효한 공유 링크가 아니에요.';
+        return;
+      }
+
+      // Resolve the share token → track metadata (public Edge Function).
+      fetch(SUPABASE_URL + '/functions/v1/resolve-share', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON },
+        body: JSON.stringify({ token: token })
+      })
+        .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+        .then(function (res) {
+          var track = (res && res.data && res.data.track) || (res && res.track);
+          if (track && track.title) {
+            titleEl.textContent = track.title;
+            metaEl.textContent = track.duration_sec ? ('길이 ' + fmtDur(track.duration_sec)) : 'AI로 만든 음악';
+          } else {
+            titleEl.textContent = 'AI로 만든 음악';
+            metaEl.textContent = '앱에서 들어보세요.';
+          }
+        })
+        .catch(function () {
+          titleEl.textContent = '만료되었거나 없는 링크예요';
+          metaEl.textContent = '공유 링크가 만료되었을 수 있어요.';
+        });
+    })();
+  </script>
+</body>
+</html>
